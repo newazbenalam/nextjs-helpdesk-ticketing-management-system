@@ -1,33 +1,17 @@
-@tailwind base;
+/* @tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities; */
+@import "~bootstrap/dist/css/bootstrap.min.css";
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+/* Import custom CSS files */
+@import url('../../public/assets/css/nucleo-icons.css');
+@import url('../../public/assets/css/nucleo-svg.css');
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
-}
+/* Import Font Awesome */
+@import url('https://kit.fontawesome.com/42d5adcbca.js');
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-}
+/* Import Argon Dashboard CSS */
+@import url('../../public/assets/css/argon-dashboard.css?v=2.0.4');
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
