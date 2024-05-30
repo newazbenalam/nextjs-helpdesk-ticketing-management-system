@@ -1,10 +1,17 @@
 "use client";
 
+// import { create } from "domain";
+// import Link from "next/link";
+// import Script from "next/script";
+import React, { useState } from "react";
+import LoginForm from "./loginForm";
 import Link from "next/link";
-import Script from "next/script";
-import React from "react";
 
 export default function Login() {
+  // create useState for email and password
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <>
       <main className="main-content  mt-0">
@@ -21,55 +28,17 @@ export default function Login() {
                       </p>
                     </div>
                     <div className="card-body">
-                      <form role="form">
-                        <div className="mb-3">
-                          <input
-                            type="email"
-                            className="form-control form-control-lg"
-                            placeholder="Email"
-                            aria-label="Email"
-                          />
-                        </div>
-                        <div className="mb-3">
-                          <input
-                            type="email"
-                            className="form-control form-control-lg"
-                            placeholder="Password"
-                            aria-label="Password"
-                          />
-                        </div>
-                        <div className="form-check form-switch">
-                          <input
-                            className="form-check-input"
-                            type="checkbox"
-                            id="rememberMe"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="rememberMe"
-                          >
-                            Remember me
-                          </label>
-                        </div>
-                        <div className="text-center">
-                          <button
-                            type="button"
-                            className="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0"
-                          >
-                            Sign in
-                          </button>
-                        </div>
-                      </form>
+                      <LoginForm />
                     </div>
                     <div className="card-footer text-center pt-0 px-lg-2 px-1">
                       <p className="mb-4 text-sm mx-auto">
                         {"Don't have an account?"}
-                        <a
-                          href={"/"}
+                        <Link
+                          href={"/signup"}
                           className="text-primary text-gradient font-weight-bold"
                         >
                           Sign up
-                        </a>
+                        </Link>
                       </p>
                     </div>
                   </div>

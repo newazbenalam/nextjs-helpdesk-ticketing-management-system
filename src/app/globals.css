@@ -1,7 +1,12 @@
+/* Tailwind base, components, utilities - uncomment if using Tailwind CSS */
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */
+
+/* Import Bootstrap */
 @import "~bootstrap/dist/css/bootstrap.min.css";
+/* @import url('https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css'); */
+
 /* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700');
 
@@ -10,8 +15,26 @@
 @import url('../../public/assets/css/nucleo-svg.css');
 
 /* Import Font Awesome */
-@import url('https://kit.fontawesome.com/42d5adcbca.js');
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css');
 
 /* Import Argon Dashboard CSS */
-@import url('../../public/assets/css/argon-dashboard.css?v=2.0.4');
+@import url('../../public/assets/css/argon-dashboard.css');
 
+/* JavaScript files are not imported in CSS, include them in _document.js or a custom Head component */
+
+
+/* styles.css or your stylesheet */
+.small-spinner {
+  width: 18px;
+  height: 18px;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
+}
+
+.transition-all-1 {
+  transition: all 0.3s ease-in-out;
+}

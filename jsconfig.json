@@ -1,5 +1,11 @@
 {
+  "typeAcquisition": {
+    "include": ["jquery"]
+  },
+  "exclude": ["node_modules", "**/node_modules/*"],
   "compilerOptions": {
+        "module": "CommonJS",
+    "target": "ES6",
     "paths": {
       "@/*": ["./src/*"]
     }

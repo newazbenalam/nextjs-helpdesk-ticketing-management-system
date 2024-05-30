@@ -6,11 +6,12 @@
 import { Inter, Open_Sans } from "next/font/google";
 import "../globals.css";
 import Script from "next/script";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "HTMS | Login Page",
+  title: "HTMS | Create Ticket",
   description: "HTMS by Newaz Ben Alam",
 };
 
@@ -24,7 +25,7 @@ export default function RootLayout({ children }) {
               {/* <!-- Navbar --> */}
               <nav className="navbar navbar-expand-lg blur border-radius-lg top-0 z-index-3 shadow position-absolute mt-4 py-2 start-0 end-0 mx-4">
                 <div className="container-fluid ms-0 ps-0 justify-between">
-                  <a
+                  <Link
                     className="navbar-brand font-weight-bolder ms-lg-0 ms-0 ps-0 "
                     href={"/dashboard"}
                   >
@@ -32,7 +33,7 @@ export default function RootLayout({ children }) {
                       Helpdesk Ticket Management System
                     </span>
                     <span className="d-inline d-sm-none">HTMS</span>
-                  </a>
+                  </Link>
                   <button
                     className="navbar-toggler shadow-none ms-0"
                     type="button"
@@ -54,12 +55,13 @@ export default function RootLayout({ children }) {
                     </ul>
                     <ul className="navbar-nav d-lg-block d-none">
                       <li className="nav-item w-24">
-                        <a
-                          href={"/tickets"}
-                          className="btn btn-sm mb-0 me-1 btn-primary"
+                        <Link
+                          href={"/"}
+                          className="btn btn-sm mb-0 me-1 bg-gradient-primary"
                         >
-                          Create Ticket
-                        </a>
+                          {/* <i className="fa fa-search"></i> */}
+                          Knowledge Base
+                        </Link>
                       </li>
                     </ul>
                   </div>
@@ -69,21 +71,10 @@ export default function RootLayout({ children }) {
             </div>
           </div>
         </div>
-
+        <div className="min-height-300 bg-primary position-absolute w-100"></div>
+        {/* <div className="top-40">  */}
         {children}
-
-        <Script id="sidenav-scrollbar-script">
-          {`
-          var win = navigator.platform.indexOf('Win') > -1;
-          if (win && document.querySelector('#sidenav-scrollbar')) {
-            var options = {
-              damping: '0.5'
-            };
-            Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-          }
-        `}
-        </Script>
-        
+        {/* </div> */}
       </body>
     </html>
   );

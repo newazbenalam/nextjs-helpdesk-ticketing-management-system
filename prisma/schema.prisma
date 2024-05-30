@@ -1,0 +1,121 @@
+
+// prisma db push
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model knowledge_base {
+  id          Int     @id @default(autoincrement())
+  createdBy users @relation(fields: [createdById], references: [id])
+  createdById Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  title       String  @db.VarChar(100)
+  content     String  @db.Text
+  category    Category @default(GENERAL)
+  tags        String? @db.Text
+  attachments attachments[]
+}
+
+model attachments {
+  id          Int     @id @default(autoincrement())
+  path        String? @db.VarChar(1000)
+  uploaded_by String? @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  
+  // one to many relation
+  message    messages @relation(fields: [messageId], references: [id])
+  messageId   Int
+  // one to many relation
+  ticket    tickets @relation(fields: [ticketId], references: [id])
+  ticketId   Int
+  // one to many relation
+  knowledge    knowledge_base @relation(fields: [knowledgeId], references: [id])
+  knowledgeId   Int
+}
+
+model messages {
+  id      Int     @id @default(autoincrement())
+  ticket  String  @db.VarChar(50)
+  message String  @db.Text
+  data    String? @db.Text
+  owner   String  @db.VarChar(100)
+  ref     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  type    Int?    @default(0)
+  to      String? @db.Text
+  // one to many relation
+  attachments attachments[]
+  // one to many relation
+  tickets    tickets @relation(fields: [ticketId], references: [id])
+  ticketId  Int
+}
+
+model tickets {
+  id        Int     @id @default(autoincrement())
+  email     String  @db.VarChar(100)
+  subject   String  @db.VarChar(100)
+  description   String  @db.VarChar(255)
+  assign_to String? @db.VarChar(100)
+  assign_on String? @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  status    Status @default(OPEN)
+  category  Category @default(GENERAL)
+  priority  Priority @default(LOW)
+  attachments attachments[]
+  messages  messages[]
+  // one to many relation
+  tickets   users? @relation(fields: [ticketId], references: [id])
+  ticketId  Int?
+}
+
+model users {
+  id       Int    @id @default(autoincrement()) 
+  name     String @db.VarChar(50)
+  email    String @db.VarChar(35)
+  mobile   String @db.VarChar(15)
+  username String @db.VarChar(50)
+  password String @db.VarChar(50)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+  type     Role   @default(USER)
+  // one to many relation
+  tickets tickets[] 
+  // one to one relation
+  knowledge_bases knowledge_base[]
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum Category {
+  GENERAL
+  TECHNICAL
+  SALES
+  BILLING
+  ACCOUNT
+  OTHER
+}
