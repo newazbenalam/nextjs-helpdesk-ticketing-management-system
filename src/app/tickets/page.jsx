@@ -188,7 +188,7 @@ export default function Tickets() {
                   name="description"
                 ></textarea>
               </div>
-              <Button className="btn btn-primary" type="submit">
+              <Button className="btn bg-gradient-primary" type="submit">
                 Submit
               </Button>
             </form>
@@ -209,17 +209,19 @@ export default function Tickets() {
               )}
             </span>
 
-            {!isLoading && (
-            Array.isArray(ticketData) && ticketData.length > 0 ? (
-              <TicketTable ticketData={ticketData} />
-            ) : (
-              <p>You have no tickets at the moment.</p>
-            )
-          )}
+            {!isLoading &&
+              (Array.isArray(ticketData) && ticketData.length > 0 ? (
+                <TicketTable ticketData={ticketData} />
+              ) : (
+                isLoading && (
+                  <p className="p-3 pt-0 pb-2">
+                    You have no tickets at the moment.
+                  </p>
+                )
+              ))}
           </div>
         </div>
       </div>
     </>
   );
 }
-

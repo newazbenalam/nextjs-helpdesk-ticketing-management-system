@@ -18,8 +18,9 @@ const Footer = () => {
             <div className="copyright text-center text-sm text-muted text-lg-start">
               {year && (
                 <>
-                  © {year}, made with <i className="fa fa-heart"></i> by
-                  <Link
+                  © {year}
+                  {/* , made with <i className="fa fa-heart"></i> by */}
+                  {/* <Link
                     href="https://www.creative-tim.com"
                     className="font-weight-bold"
                     target="_blank"
@@ -27,7 +28,7 @@ const Footer = () => {
                   >
                     <Link href="https://www.github.com/newazbenalam"> Newaz </Link>
                   </Link>
-                  for a better web.
+                  for a better web. */}
                 </>
               )}
             </div>
@@ -36,7 +37,7 @@ const Footer = () => {
             <ul className="nav nav-footer justify-content-center justify-content-lg-end">
               <li className="nav-item">
                 <Link
-                  href="https://www.creative-tim.com"
+                  href="https://github.com/newazbenalam"
                   className="nav-link text-muted"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -54,19 +55,10 @@ const Footer = () => {
                   About Us
                 </Link>
               </li>
+
               <li className="nav-item">
                 <Link
-                  href="https://www.creative-tim.com/blog"
-                  className="nav-link text-muted"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Blog
-                </Link>
-              </li>
-              <li className="nav-item">
-                <Link
-                  href="https://www.creative-tim.com/license"
+                  href="https://github.com/newazbenalam"
                   className="nav-link pe-0 text-muted"
                   target="_blank"
                   rel="noopener noreferrer"

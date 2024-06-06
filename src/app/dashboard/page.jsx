@@ -1,11 +1,51 @@
 "use client";
 
-import React, { useState } from "react";
-import { logOut } from "../lib/actions";
-import LogOutButton from "../components/LogOutButton";
-import Image from "next/image";
+import "@/app/globals.css";
+import React, { use, useEffect, useState } from "react";
+import { getTicketsStatus } from "./hooks/GetTicketsStatus";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { getCookies } from "@/app/lib/actions";
+import TicketTable from "../Tickets/components/TickketTable";
+import { revalidateLocalData } from "../tickets/hooks/revelidateTickets";
+import Link from "next/link";
 
 export default function Dashboard() {
+  const [openTickets, setOpenTickets] = useState(<LoadingSpinner />);
+  const [closedTickets, setClosedTickets] = useState(<LoadingSpinner />);
+  const [customerSupport, setCustomerSupport] = useState(<LoadingSpinner />);
+  const [servicesStatus, setServicesStatus] = useState(<LoadingSpinner />);
+  const [ticketData, setTicketData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [email, setEmail] = useState(null);
+
+  useEffect(() => {
+    var sessionData;
+    const prevData = JSON.parse(localStorage.getItem("ticket_data")) || [];
+    console.log("Previous data: ", prevData);
+
+    const fetchTickets = async (prevDataReq) => {
+      sessionData = await getCookies();
+      const { openTickets, closedTickets, inProgressTickets, activeServices } =
+        await getTicketsStatus(sessionData?.user?.id);
+      setOpenTickets(openTickets?.length || 0);
+      setClosedTickets(closedTickets?.length || 0);
+      setCustomerSupport(inProgressTickets?.length || 0);
+      setServicesStatus(activeServices?.length || 0);
+      setEmail(sessionData?.user?.email);
+
+      // const dataResponse = await revalidateLocalData(prevDataReq, email);
+      console.log("Data sessionData email: ", email);
+      // console.log("Previous dataResponse: ", dataResponse);
+      // setTicketData(() => openTickets.filter((data) =>( data.priority === "HIGH")));
+      // sort by decening order tickets id
+      setTicketData(openTickets?.sort((a, b) => b.id - a.id).slice(0, 15));
+    };
+
+    // revalidateData(prevData);
+    fetchTickets(prevData);
+    setIsLoading(false);
+  }, [email]);
+
   return (
     <>
       <div className="row">
@@ -14,18 +54,23 @@ export default function Dashboard() {
             <div className="card-body p-3">
               <div className="row">
                 <div className="col-8">
-                  <div className="numbers">
-                    <p className="text-sm mb-0 text-uppercase font-weight-bold">
-                      {"Today's Money"}
-                    </p>
-                    <h5 className="font-weight-bolder">$53,000</h5>
-                    <p className="mb-0">
-                      <span className="text-success text-sm font-weight-bolder">
-                        +55%
-                      </span>
-                      since yesterday
-                    </p>
-                  </div>
+                  <Link
+                    href={"/dashboard/tickets/lists?status=OPEN"}
+                    className="hover-decorate"
+                  >
+                    <div className="numbers">
+                      <p className="text-sm mb-0 text-uppercase font-weight-bold">
+                        {"Open Tickets"}
+                      </p>
+                      <h5 className="font-weight-bolder pl-1">{openTickets}</h5>
+                      <p className="mb-0">
+                        <span className="text-success text-sm font-weight-bolder">
+                          {/* +55% */}
+                        </span>
+                        Total open tickets
+                      </p>
+                    </div>
+                  </Link>
                 </div>
                 <div className="col-4 text-end">
                   <div className="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
@@ -44,18 +89,25 @@ export default function Dashboard() {
             <div className="card-body p-3">
               <div className="row">
                 <div className="col-8">
-                  <div className="numbers">
-                    <p className="text-sm mb-0 text-uppercase font-weight-bold">
-                      {" Today's Users"}
-                    </p>
-                    <h5 className="font-weight-bolder">2,300</h5>
-                    <p className="mb-0">
-                      <span className="text-success text-sm font-weight-bolder">
-                        +3%
-                      </span>
-                      since last week
-                    </p>
-                  </div>
+                  <Link
+                    href={"/dashboard/tickets/lists?status=CLOSED"}
+                    className="hover-decorate"
+                  >
+                    <div className="numbers">
+                      <p className="text-sm mb-0 text-uppercase font-weight-bold">
+                        {" Closed Tickets"}
+                      </p>
+                      <h5 className="font-weight-bolder pl-1">
+                        {closedTickets}
+                      </h5>
+                      <p className="mb-0">
+                        <span className="text-success text-sm font-weight-bolder">
+                          {/* +3% */}
+                        </span>
+                        Total closed tickets
+                      </p>
+                    </div>
+                  </Link>
                 </div>
                 <div className="col-4 text-end">
                   <div className="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
@@ -76,14 +128,16 @@ export default function Dashboard() {
                 <div className="col-8">
                   <div className="numbers">
                     <p className="text-sm mb-0 text-uppercase font-weight-bold">
-                      New Clients
+                      Customers Support
                     </p>
-                    <h5 className="font-weight-bolder">+3,462</h5>
+                    <h5 className="font-weight-bolder pl-1">
+                      {customerSupport}
+                    </h5>
                     <p className="mb-0">
                       <span className="text-danger text-sm font-weight-bolder">
-                        -2%
+                        {/* -2% */}
                       </span>
-                      since last quarter
+                      Last online 30 minutes ago
                     </p>
                   </div>
                 </div>
@@ -99,6 +153,7 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
         <div className="col-xl-3 col-sm-6">
           <div className="card">
             <div className="card-body p-3">
@@ -106,21 +161,23 @@ export default function Dashboard() {
                 <div className="col-8">
                   <div className="numbers">
                     <p className="text-sm mb-0 text-uppercase font-weight-bold">
-                      Sales
+                      Services Status
                     </p>
-                    <h5 className="font-weight-bolder">$103,430</h5>
+                    <h5 className="font-weight-bolder pl-1">
+                      {servicesStatus}
+                    </h5>
                     <p className="mb-0">
                       <span className="text-success text-sm font-weight-bolder">
-                        +5%
+                        {/* +5% */}
                       </span>{" "}
-                      than last month
+                      Current active issues
                     </p>
                   </div>
                 </div>
                 <div className="col-4 text-end">
                   <div className="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
                     <i
-                      className="ni ni-cart text-lg opacity-10"
+                      className="ni ni-check-bold text-lg opacity-10"
                       aria-hidden="true"
                     ></i>
                   </div>
@@ -130,15 +187,12 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      <div className="row mt-4 h-100">
+
+      {/* <div className="row mt-4 h-100">
         <div className="col-lg-7 mb-lg-0 mb-4">
           <div className="card z-index-2 h-100">
             <div className="card-header pb-0 pt-3 bg-transparent">
-              <h6 className="text-capitalize">Sales overview</h6>
-              <p className="text-sm mb-0">
-                <i className="fa fa-arrow-up text-success"></i>
-                <span className="font-weight-bold">4% more</span> in 2021
-              </p>
+              <h6 className="text-capitalize">Latest updates</h6>
             </div>
             <div className="card-body p-3">
               <div className="chart">
@@ -245,183 +299,29 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="row mt-4">
         <div className="col-lg-7 mb-lg-0 mb-4">
-          <div className="card ">
-            <div className="card-header pb-0 p-3">
-              <div className="d-flex justify-content-between">
-                <h6 className="mb-2">Sales by Country</h6>
+          <div className="card">
+            <div className="card-header p-3 pb-2">
+              <h6 className="mb-0">Tickets History</h6>
+            </div>
+            {isLoading && (
+              <div className="pl-3 pb-3">
+                <LoadingSpinner className="small-spinner" />
               </div>
-            </div>
-            <div className="table-responsive">
-              <table className="table align-items-center ">
-                <tbody>
-                  <tr>
-                    <td className="w-30">
-                      <div className="d-flex px-2 py-1 align-items-center">
-                        <div>
-                          <Image
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            style={{ width: "100%", height: "auto" }} // optional
-                            src="/assets/img/icons/flags/US.png"
-                            alt="Country flag"
-                          />
-                        </div>
-                        <div className="ms-4">
-                          <p className="text-xs font-weight-bold mb-0">
-                            Country:
-                          </p>
-                          <h6 className="text-sm mb-0">United States</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Sales:</p>
-                        <h6 className="text-sm mb-0">2500</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Value:</p>
-                        <h6 className="text-sm mb-0">$230,900</h6>
-                      </div>
-                    </td>
-                    <td className="align-middle text-sm">
-                      <div className="col text-center">
-                        <p className="text-xs font-weight-bold mb-0">Bounce:</p>
-                        <h6 className="text-sm mb-0">29.9%</h6>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="w-30">
-                      <div className="d-flex px-2 py-1 align-items-center">
-                        <div>
-                          <Image
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            style={{ width: "100%", height: "auto" }} // optional
-                            src="/assets/img/icons/flags/DE.png"
-                            alt="Country flag"
-                          />
-                        </div>
-                        <div className="ms-4">
-                          <p className="text-xs font-weight-bold mb-0">
-                            Country:
-                          </p>
-                          <h6 className="text-sm mb-0">Germany</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Sales:</p>
-                        <h6 className="text-sm mb-0">3.900</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Value:</p>
-                        <h6 className="text-sm mb-0">$440,000</h6>
-                      </div>
-                    </td>
-                    <td className="align-middle text-sm">
-                      <div className="col text-center">
-                        <p className="text-xs font-weight-bold mb-0">Bounce:</p>
-                        <h6 className="text-sm mb-0">40.22%</h6>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="w-30">
-                      <div className="d-flex px-2 py-1 align-items-center">
-                        <div>
-                          <Image
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            style={{ width: "100%", height: "auto" }} // optional
-                            src="/assets/img/icons/flags/GB.png"
-                            alt="Country flag"
-                          />
-                        </div>
-                        <div className="ms-4">
-                          <p className="text-xs font-weight-bold mb-0">
-                            Country:
-                          </p>
-                          <h6 className="text-sm mb-0">Great Britain</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Sales:</p>
-                        <h6 className="text-sm mb-0">1.400</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Value:</p>
-                        <h6 className="text-sm mb-0">$190,700</h6>
-                      </div>
-                    </td>
-                    <td className="align-middle text-sm">
-                      <div className="col text-center">
-                        <p className="text-xs font-weight-bold mb-0">Bounce:</p>
-                        <h6 className="text-sm mb-0">23.44%</h6>
-                      </div>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="w-30">
-                      <div className="d-flex px-2 py-1 align-items-center">
-                        <div>
-                          <Image
-                            width={0}
-                            height={0}
-                            sizes="100vw"
-                            style={{ width: "100%", height: "auto" }} // optional
-                            src="/assets/img/icons/flags/BR.png"
-                            alt="Country flag"
-                          />
-                        </div>
-                        <div className="ms-4">
-                          <p className="text-xs font-weight-bold mb-0">
-                            Country:
-                          </p>
-                          <h6 className="text-sm mb-0">Brasil</h6>
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Sales:</p>
-                        <h6 className="text-sm mb-0">562</h6>
-                      </div>
-                    </td>
-                    <td>
-                      <div className="text-center">
-                        <p className="text-xs font-weight-bold mb-0">Value:</p>
-                        <h6 className="text-sm mb-0">$143,960</h6>
-                      </div>
-                    </td>
-                    <td className="align-middle text-sm">
-                      <div className="col text-center">
-                        <p className="text-xs font-weight-bold mb-0">Bounce:</p>
-                        <h6 className="text-sm mb-0">32.14%</h6>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            )}
+            {!isLoading &&
+              (Array.isArray(ticketData) && ticketData.length > 0 ? (
+                <TicketTable ticketData={ticketData} className="z-index-0" />
+              ) : (
+                <p className="p-3 pt-0 pb-2">
+                  You have no tickets at the moment.
+                </p>
+              ))}
           </div>
         </div>
+
         <div className="col-lg-5">
           <div className="card">
             <div className="card-header pb-0 p-3">
@@ -429,25 +329,7 @@ export default function Dashboard() {
             </div>
             <div className="card-body p-3">
               <ul className="list-group">
-                <li className="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
-                  <div className="d-flex align-items-center">
-                    <div className="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
-                      <i className="ni ni-mobile-button text-white opacity-10"></i>
-                    </div>
-                    <div className="d-flex flex-column">
-                      <h6 className="mb-1 text-dark text-sm">Devices</h6>
-                      <span className="text-xs">
-                        250 in stock,{" "}
-                        <span className="font-weight-bold">346+ sold</span>
-                      </span>
-                    </div>
-                  </div>
-                  <div className="d-flex">
-                    <button className="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto">
-                      <i className="ni ni-bold-right" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                </li>
+                
                 <li className="list-group-item border-0 d-flex justify-content-between ps-0 mb-2 border-radius-lg">
                   <div className="d-flex align-items-center">
                     <div className="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
@@ -456,8 +338,8 @@ export default function Dashboard() {
                     <div className="d-flex flex-column">
                       <h6 className="mb-1 text-dark text-sm">Tickets</h6>
                       <span className="text-xs">
-                        123 closed,{" "}
-                        <span className="font-weight-bold">15 open</span>
+                        { closedTickets } closed,{" "}
+                        <span className="font-weight-bold"> {openTickets } open</span>
                       </span>
                     </div>
                   </div>
@@ -475,8 +357,8 @@ export default function Dashboard() {
                     <div className="d-flex flex-column">
                       <h6 className="mb-1 text-dark text-sm">Error logs</h6>
                       <span className="text-xs">
-                        1 is active,{" "}
-                        <span className="font-weight-bold">40 closed</span>
+                        0 is active,{" "}
+                        <span className="font-weight-bold">4 closed</span>
                       </span>
                     </div>
                   </div>
@@ -486,22 +368,7 @@ export default function Dashboard() {
                     </button>
                   </div>
                 </li>
-                <li className="list-group-item border-0 d-flex justify-content-between ps-0 border-radius-lg">
-                  <div className="d-flex align-items-center">
-                    <div className="icon icon-shape icon-sm me-3 bg-gradient-dark shadow text-center">
-                      <i className="ni ni-satisfied text-white opacity-10"></i>
-                    </div>
-                    <div className="d-flex flex-column">
-                      <h6 className="mb-1 text-dark text-sm">Happy users</h6>
-                      <span className="text-xs font-weight-bold">+ 430</span>
-                    </div>
-                  </div>
-                  <div className="d-flex">
-                    <button className="btn btn-link btn-icon-only btn-rounded btn-sm text-dark icon-move-right my-auto">
-                      <i className="ni ni-bold-right" aria-hidden="true"></i>
-                    </button>
-                  </div>
-                </li>
+                
               </ul>
             </div>
           </div>

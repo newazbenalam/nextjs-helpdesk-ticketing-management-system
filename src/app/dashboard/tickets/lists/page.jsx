@@ -10,9 +10,12 @@ import Image from "next/image";
 import LoadingSpinner from "@/app/components/LoadingSpinner";
 import TicketTable from "@/app/Tickets/components/TickketTable";
 import { revalidateLocalData } from "@/app/tickets/hooks/revelidateTickets";
-
+import { useSearchParams } from "next/navigation";
 
 export default function Tickets() {
+  const searchParams = useSearchParams();
+  const statusFilter = searchParams.get("status") || "ALL";
+
   const [session, setSession] = useState(null);
   const [state, setState] = useState(null);
   const [ticketData, setTicketData] = useState(null);
@@ -48,14 +51,17 @@ export default function Tickets() {
       const dataResponse = await revalidateLocalData(prevDataReq, email);
       console.log("Data sessionData email: ", email);
       console.log("Previous dataResponse: ", dataResponse);
-      setTicketData(dataResponse);
+      if (statusFilter !== "ALL") {
+        setTicketData(() => dataResponse.filter((data) =>( data.status === statusFilter)));
+      } else {
+        setTicketData(dataResponse);
+      }
       // localStorage.setItem("ticket_data", JSON.stringify(dataResponse));
     };
 
     revalidateData(prevData);
     setIsLoading(false);
-  }, [email]);
-
+  }, [email, statusFilter]);
   const handleChange = (e) => {
     // setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -113,91 +119,9 @@ export default function Tickets() {
 
   return (
     <>
-      <div className=" container-fluid  bg-white shadow-sm border-radius-xl py-4 py-lg-4 py-md-4 px-4 px-lg-4 px-sm-4">
-        <form onSubmit={handleSubmit}>
-          {session && <h6>Welcome, {session?.user?.name}</h6>}
-          <h6>Create New Ticket</h6>
-          <div className="form-group">
-            <label htmlFor="exampleFormControlInput1">Email address</label>
-            <input
-              value={email || formData.email || ""}
-              type="email"
-              className="form-control"
-              id="exampleFormControlInput1"
-              placeholder="name@example.com"
-              onChange={handleChange}
-              name="email"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="exampleFormControlInput2">Subject</label>
-            <input
-              value={formData.subject || ""}
-              type="text"
-              className="form-control"
-              id="exampleFormControlInput2"
-              placeholder="Subject"
-              onChange={handleChange}
-              name="subject"
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="exampleFormControlSelect1">Priority</label>
-            <select
-              value={formData.priority || "LOW"}
-              className="form-control"
-              id="exampleFormControlSelect1"
-              onChange={handleChange}
-              name="priority"
-            >
-              <option>LOW</option>
-              <option>MEDIUM</option>
-              <option>HIGH</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="exampleFormControlSelect2">Category</label>
-            <select
-              value={formData.category || "GENERAL"}
-              className="form-control"
-              id="exampleFormControlSelect1"
-              onChange={handleChange}
-              name="category"
-            >
-              <option>GENERAL</option>
-              <option>TECHNICAL</option>
-              <option>SALES</option>
-              <option>BILLING</option>
-              <option>ACCOUNT</option>
-              <option>OTHER</option>
-            </select>
-          </div>
-          <div className="form-group">
-            <label htmlFor="exampleFormControlTextarea1">Description</label>
-            <textarea
-              value={formData.description || ""}
-              className="form-control"
-              id="exampleFormControlTextarea1"
-              rows="3"
-              placeholder="Please describe your issue here..."
-              onChange={handleChange}
-              name="description"
-            ></textarea>
-          </div>
-          <Button className="btn  bg-gradient-primary" type="submit">
-            Submit
-          </Button>
-        </form>
-        {state && (
-          <p className="alert-info text-white text-lg px-4 py-2 border-radius-md">
-            {state}
-          </p>
-        )}
-      </div>
-
       <div className="bg-white shadow-sm border-radius-xl py-4 py-lg-4 py-md-4 px-4 px-lg-4 px-sm-4 mt-4">
         <span className=" d-flex gap-3">
-          <h6>Tickets History</h6>{" "}
+          <h6>  {statusFilter.charAt(0).toUpperCase() + statusFilter.substring(1).toLowerCase() } Tickets History</h6>{" "}
           {isLoading && (
             <div className="my-0 p-0">
               <LoadingSpinner className="small-spinner" />
@@ -207,7 +131,11 @@ export default function Tickets() {
 
         {!isLoading &&
           (Array.isArray(ticketData) && ticketData.length > 0 ? (
-            <TicketTable ticketData={ticketData} classNamez="card" />
+            <TicketTable
+              ticketData={ticketData}
+              classNamez="card"
+              perPage="20"
+            />
           ) : (
             isLoading && (
               <p className="p-3 pt-0 pb-2">

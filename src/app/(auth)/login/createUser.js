@@ -42,7 +42,7 @@ export const findUserBasic = async (email, pass) => {
       },
     });
 
-    if (user.password != pass){
+    if (user?.password != pass){
       return null;
     }
     console.log(user);

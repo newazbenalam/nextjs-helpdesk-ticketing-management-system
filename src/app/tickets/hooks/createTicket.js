@@ -39,7 +39,7 @@ export const createTicket = async (formData) => {
         status: status || "OPEN",
         category: category || "GENERAL",
         priority: priority || "LOW",
-        ticketId: userData?.id || null,
+        userId: userData?.id || null,
       },
     });
 

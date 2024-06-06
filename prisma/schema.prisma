@@ -42,11 +42,10 @@ model attachments {
 
 model messages {
   id      Int     @id @default(autoincrement())
-  ticket  String  @db.VarChar(50)
   message String  @db.Text
   data    String? @db.Text
-  owner   String  @db.VarChar(100)
-  ref     Int
+  owner   String?  @db.VarChar(100)
+  ref     Int?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt @default(now())
   type    Int?    @default(0)
@@ -73,8 +72,8 @@ model tickets {
   attachments attachments[]
   messages  messages[]
   // one to many relation
-  tickets   users? @relation(fields: [ticketId], references: [id])
-  ticketId  Int?
+  users   users? @relation(fields: [userId], references: [id])
+  userId  Int?
 }
 
 model users {

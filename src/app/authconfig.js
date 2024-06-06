@@ -10,10 +10,10 @@ export const authConfig = {
       const isOnDashboard =
         request.nextUrl.pathname.startsWith("/dashboard") ||
         request.nextUrl.pathname.startsWith("/admin");
-      console.log(
-        "isLoggedIn: " + isLoggedIn,
-        "isOnDashboard: " + isOnDashboard
-      );
+      // console.log(
+      //   "isLoggedIn: " + isLoggedIn,
+      //   "isOnDashboard: " + isOnDashboard
+      // );
       if (isOnDashboard) {
         if (isLoggedIn) return true;
         return false;
@@ -22,6 +22,8 @@ export const authConfig = {
           request.nextUrl.pathname.startsWith("/signup")) &&
         isLoggedIn
       ) {
+        // if (auth?.user.role === "admin")
+        //   return Response.redirect(new URL("/admin", request.nextUrl.origin));
         return Response.redirect(new URL("/dashboard", request.nextUrl.origin));
       }
       return true;

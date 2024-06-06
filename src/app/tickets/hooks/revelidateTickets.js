@@ -5,29 +5,31 @@ import db from "@/app/lib/db";
 export const revalidateLocalData = async (arrOfFormData, email) => {
   try {
     const resultArr = [];
-    let userResult = null
-    ;
-
+    let userResult = null;
     console.log("email: ", email);
     // Find the user data with the provided email
-    if (email != null){
+    if (email != null) {
       userResult = await db.users.findFirst({
         where: {
           email: email,
         },
       });
     }
-      
-    // If user data is found, find the tickets associated with that user
-    if (userResult !== null) {
-      const userTickets = await db.tickets.findMany({
-        where: {
-          ticketId: userResult.id,
-        },
-      });
-      resultArr.push(...userTickets);
-    }
 
+    // If user data is found, find the tickets associated with that user
+    if (userResult?.type === ("ADMIN" || "EMPLOYEE")) {
+      const userTickets = await db.tickets.findMany();
+      resultArr.push(...userTickets);
+    } else {
+      if (userResult !== null) {
+        const userTickets = await db.tickets.findMany({
+          where: {
+            userId: userResult.id,
+          },
+        });
+        resultArr.push(...userTickets);
+      }
+    }
 
     for (let i = 0; i < arrOfFormData.length; i++) {
       const ticketData = await db.tickets.findFirst({
@@ -61,6 +63,6 @@ export const revalidateLocalData = async (arrOfFormData, email) => {
     return resultArr;
   } catch (error) {
     console.error("Error retrieving ticket data:", error);
-    return { response: "Error retrieving ticket data "+ error };
+    return { response: "Error retrieving ticket data " + error };
   }
 };
